@@ -15,4 +15,4 @@ TIL을 진행하는 블로그로 깃 페이지를 시작하게 됐다.
 
 깃허브 페이지 개설에 대한 진행 내용은 다른 글에서 다루겠다.
 
-![GitPage_logo](../assets/images/2024_09_07_GitHubPages.jpeg)
+![GitPage_logo](../assets/images/2024_09_06_GitHubPages.jpg)
