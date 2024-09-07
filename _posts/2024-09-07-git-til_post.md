@@ -17,7 +17,7 @@ title: TIL GitPage 만들기
 
 <span style="font-size: 18px;">해당 레포지토리 Fork 진행.</span>
 
-![GitPage_logo](../assets/images/2024_09_07_Screenshot_00.jpg)
+![GitPage_logo](../assets/images/2024_09_07_Screenshot_00.JPG)
 
 <span style="font-size: 18px;"> 이때 이름은 Username.github.io 양식을 지켜야 한다. </span>
 
@@ -27,7 +27,7 @@ title: TIL GitPage 만들기
 
 <span style="font-size: 18px;">Repository Clone으로 로컬을 만든다.</span>
 
-![GitPage_logo](../assets/images/2024_09_07_Screenshot_01.jpg)
+![GitPage_logo](../assets/images/2024_09_07_Screenshot_01.JPG)
 [이미지 캡처 출처](https://pages.github.com/)<span style="font-size: 18px;"> - gitpage 만들기 git 기본 안내글</span>  
 
 
