@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HUGO on KIM MIN CHEOL</title><link>https://lostwaltz.github.io/tags/hugo/</link><description>Recent content in HUGO on KIM MIN CHEOL</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 08 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://lostwaltz.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>HUGO STACK 테마 적용하기</title><link>https://lostwaltz.github.io/p/hugo-stack-%ED%85%8C%EB%A7%88-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0/</link><pubDate>Tue, 08 Jul 2025 00:00:00 +0000</pubDate><guid>https://lostwaltz.github.io/p/hugo-stack-%ED%85%8C%EB%A7%88-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0/</guid><description>&lt;hr>
+&lt;h1 id="hugo-stack-테마로-블로그-개설하기">HUGO STACK 테마로 블로그 개설하기
+&lt;/h1>&lt;p>이번 포스트는 &lt;strong>STACK&lt;/strong> 테마의 블로그를, &lt;strong>GITPAGE&lt;/strong>를 통해 만든 과정을 정리해보겠습니다.&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>HUGO&lt;/strong> 다운로드.&lt;/li>
+&lt;li>&lt;strong>GO&lt;/strong> 다운로드.&lt;/li>
+&lt;/ol>
+&lt;p>GIT의 경우, 다운로드 된 가정하에 진행합니다.&lt;/p>
+&lt;h2 id="hugo-다운로드">HUGO 다운로드
+&lt;/h2>&lt;ol>
+&lt;li>&lt;a class="link" href="https://github.com/gohugoio/hugo/releases/tag/v0.148.2" target="_blank" rel="noopener"
+>HUGO &lt;/a> window/extended 버젼을 다운로드 받습니다.&lt;/li>
+&lt;li>압축을 해제하고, HUGO.exe 파일이 있는 폴더를 환경변수 PATH에 등록합니다.&lt;/li>
+&lt;/ol>
+&lt;h2 id="테마-다운로드">테마 다운로드
+&lt;/h2>&lt;ol>
+&lt;li>&lt;a class="link" href="https://stack.jimmycai.com/" target="_blank" rel="noopener"
+>STACK &lt;/a>에서, 템플릿을 통해 리포지토리를 생성합니다.&lt;/li>
+&lt;li>레포지토리 생성시 이름을 0000/github.io 로 맞춰줍니다.&lt;/li>
+&lt;/ol>
+&lt;h2 id="go-다운로드">GO 다운로드
+&lt;/h2>&lt;p>&lt;strong>CODESPACE&lt;/strong>를 생성하면 hugo serve 명령어를 통해 로컬 호스팅을 진행할 수 있지만 &lt;br>
+코드 스페이스의 로컬이기 때문에 연결이 되지 않습니다.&lt;/p>
+&lt;p>때문에 &lt;strong>GO&lt;/strong>를 다운로드 받고, 로컬 서버를 열 수 있도록 해봅시다.&lt;/p>
+&lt;ol>
+&lt;li>&lt;a class="link" href="https://go.dev/dl/" target="_blank" rel="noopener"
+>GO &lt;/a>에서, 알맞는 OS에의 파일을 받습니다.&lt;/li>
+&lt;li>go version 명령어를 통해, 설치를 확인합니다.&lt;/li>
+&lt;li>리포지토리의 로컬 폴더에서, git serve 명령어를 실행합니다.&lt;/li>
+&lt;li>테마가 적용된 상태의 로컬 블로그를 확인합니다.&lt;/li>
+&lt;/ol>
+&lt;h2 id="실제-페이지-배포">실제 페이지 배포
+&lt;/h2>&lt;p>&lt;strong>STACK&lt;/strong>에서 굉장히 편한 방법을 제공 해준 덕분에, 벌써 모든 준비가 끝났고 배포만 진행하면 됩니다.&lt;/p>
+&lt;ol>
+&lt;li>Setting/Page에서 gh-pages로 변경 후 &lt;strong>SAVE&lt;/strong> 합니다.&lt;/li>
+&lt;li>ReedMe 파일을 삭제 합니다.&lt;/li>
+&lt;li>커밋, 푸쉬를 진행 하면, gitpages를 통해 실제 페이지를 확인 할 수 있습니다!&lt;/li>
+&lt;/ol>
+&lt;h3 id="끝내며">끝내며
+&lt;/h3>&lt;p>적용 방법들 포스트를 많이 찾아 봤었는데, 원래 방법은 submodule 등, theme를 받아와 배포하고, 설정 할게 많았으나
+감사하게도 쉽게 시작할 수 있도록 STARTER 패키지를 내주어 쉽게 적용 할 수 있었습니다.&lt;/p>
+&lt;p>컴퓨터를 밀고 나면, 참고하려고 페이지를 방문하는 제가 있겠네요.&lt;/p>
+&lt;hr></description></item></channel></rss>
