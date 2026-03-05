@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>유니티(Unity) 의존성 주입(DI)으로 싱글톤의 한계 극복하기 · lostwaltz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <style>
+    :root {
+      --bg:  #0c0c0f;
+      --s1:  #131316;
+      --s2:  #18181d;
+      --bd:  #222228;
+      --bd2: #2e2e38;
+      --tx:  #e2e2e8;
+      --mu:  #6e6e82;
+      --mu2: #9898b0;
+      --ac:  #8b7cf8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    header { padding: 36px 0 32px; }
+
+    .back {
+      font-size: 12px;
+      color: var(--mu2);
+      text-decoration: none;
+      letter-spacing: .5px;
+      transition: color .15s;
+    }
+    .back:hover { color: var(--ac); }
+
+    .post-header {
+      padding: 32px 0 28px;
+      border-bottom: 1px solid var(--bd);
+      margin-bottom: 40px;
+    }
+
+    .post-title {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: .3px;
+      line-height: 1.35;
+      color: var(--tx);
+      margin-bottom: 16px;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .post-date { font-size: 12px; color: var(--mu); font-variant-numeric: tabular-nums; }
+    .post-read { font-size: 12px; color: var(--mu); }
+
+    .tag {
+      font-size: 10px;
+      color: var(--mu2);
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    .post-body {
+      line-height: 1.85;
+      font-size: 15px;
+      color: var(--tx);
+      padding-bottom: 64px;
+    }
+
+    .post-body h2 {
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--tx);
+      margin: 2.4em 0 .8em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .post-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--mu2);
+      margin: 1.8em 0 .6em;
+      letter-spacing: .3px;
+    }
+
+    .post-body p { margin-bottom: 1.4em; }
+
+    .post-body ul {
+      margin-bottom: 1.4em;
+      padding-left: 20px;
+      color: var(--mu2);
+    }
+    .post-body li { margin-bottom: 6px; }
+
+    .post-body strong {
+      color: var(--tx);
+      font-weight: 600;
+    }
+
+    /* CODE BLOCKS */
+    .post-body pre {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 1.6em 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .post-body code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    .post-body :not(pre) > code {
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: .9em;
+      color: var(--ac);
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2em 0;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--bd);
+    }
+    th {
+      font-weight: 600;
+      color: var(--tx);
+      border-bottom: 1px solid var(--mu);
+    }
+    td { color: var(--mu2); }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="back">&larr; lostwaltz</a>
+  </header>
+
+  <article>
+    <div class="post-header">
+      <h1 class="post-title">유니티(Unity) 의존성 주입(DI)으로 싱글톤의 한계 극복하기</h1>
+      <div class="post-meta">
+        <span class="post-date">2026.03.06</span>
+        <span class="post-read">· 7분 소요</span>
+        <span class="tag">unity</span>
+        <span class="tag">architecture</span>
+        <span class="tag">devlog</span>
+        <span class="tag">di</span>
+      </div>
+    </div>
+
+    <div class="post-body">
+      <p>최근 새로운 데스크탑 에이전트 프로젝트를 진행하면서, 기존에 상용화된 유사 오픈소스 프로젝트의 코드를 뜯어볼 기회가 있었다. 기능적으로는 훌륭했지만, 내부 코드는 수십 개의 매니저 클래스가 얽히고설킨 거대한 스파게티 구조였다.</p>
+
+      <p>원인은 명확했다. <strong>싱글톤(Singleton) 패턴의 남용과 유니티 라이프사이클에 대한 강한 결합</strong> 때문이었다. 이를 반면교사 삼아, 현재 진행 중인 프로젝트에 <strong>의존성 주입(Dependency Injection, DI)</strong>을 도입하게 된 배경과 그 구조적 이점을 정리해 본다.</p>
+
+      <h2>기존 구조의 문제 (싱글톤 남용)</h2>
+
+      <p>유니티 생태계에서 싱글톤은 마약과도 같다. <code>PlayerManager.Instance.GetPlayer()</code> 한 줄이면 씬(Scene) 어디서든 원하는 데이터에 접근할 수 있기 때문이다. 하지만 프로젝트 규모가 커지면 다음과 같은 치명적인 문제들이 발생한다.</p>
+
+      <ul>
+        <li><strong>강한 결합도 (Tight Coupling):</strong> 특정 객체를 단독으로 테스트하고 싶어도 엮여있는 수많은 Manager들이 없으면 <code>NullReferenceException</code>을 뿜으며 뻗어버린다.</li>
+        <li><strong>실행 순서(Lifecycle)의 카오스:</strong> 어떤 매니저의 <code>Awake()</code>가 먼저 실행될지 보장할 수 없기 때문에, 초기화 타이밍이 꼬이는 이른바 '기도 메타' 프로그래밍이 된다.</li>
+        <li><strong>기능 확장(Modding)의 불가:</strong> 새로운 기능을 추가하려면 기존 매니저 클래스 내부의 <code>if-else</code> 문을 직접 수정해야만 한다. (OCP 위배)</li>
+      </ul>
+
+<pre><code class="language-csharp">// &#10060; 기존 방식 (싱글톤 남용)
+public class Monster : MonoBehaviour 
+{
+    void Update() 
+    {
+        // 몬스터가 PlayerManager의 존재를 명시적으로 알아야만 함
+        // PlayerManager가 씬에 없으면 당장 에러 발생
+        Vector3 target = PlayerManager.Instance.GetPlayer().position;
+        MoveTo(target);
+    }
+}
+</code></pre>
+
+      <h2>의존성 주입(DI) 패턴으로 전환</h2>
+
+      <p>이러한 한계를 극복하기 위해 <strong>"객체가 자신이 사용할 도구를 직접 찾지 않고, 생성 시점에 외부에서 주입받는"</strong> DI 패턴을 도입했다. 핵심은 <strong>"나는 네가 누군지 알 필요 없다"</strong>는 철학이다.</p>
+
+      <h3>1. 인터페이스(Interface)를 통한 추상화</h3>
+      <p>객체들은 구체적인 클래스 대신 인터페이스에만 의존하게 만든다.</p>
+
+<pre><code class="language-csharp">// &#9989; 새로운 방식 (DI 적용)
+public class Monster : MonoBehaviour 
+{
+    private IPlayer _targetPlayer; // 인터페이스에만 의존
+
+    // 팩토리나 Bootstrapper가 생성 시점에 타겟을 "주입"해줌
+    public void Construct(IPlayer target) 
+    {
+        _targetPlayer = target;
+    }
+
+    void Update() 
+    {
+        if (_targetPlayer == null) return;
+        // 타겟이 진짜 유저인지, 분신인지, 테스트용 더미인지 알 필요 없음
+        MoveTo(_targetPlayer.Position); 
+    }
+}
+</code></pre>
+
+      <h3>2. 단일 진입점 (AppBootstrapper)</h3>
+      <p>의존성들이 꼬이지 않도록, 시스템 최상단에 모든 조립을 통제하는 단일 진입점(<code>AppBootstrapper</code>)을 둔다. 유니티의 <code>Awake/Start</code>에 흩어져 있던 초기화 로직을 한 곳으로 모으는 것이다.</p>
+
+<pre><code class="language-csharp">public class AppBootstrapper : MonoBehaviour 
+{
+    void Awake() 
+    {
+        // 1. 핵심 인프라 생성
+        IEventBus eventBus = new EventBus();
+        ILLMProvider llmProvider = new GroqProvider();
+        
+        // 2. 핵심 로직 조립 (순수 C# 지향)
+        AgentLoop agent = new AgentLoop(eventBus, llmProvider);
+        
+        // 3. UI 및 뷰 계층에 의존성 주입
+        FindObjectOfType&lt;UIManager&gt;().Construct(eventBus);
+    }
+}
+</code></pre>
+
+      <h2>모딩(Modding)과 확장성의 마법</h2>
+
+      <p>DI와 EventBus가 결합되면 프로젝트는 놀라운 확장성을 갖게 된다. 
+      유명한 모딩 친화적 게임(예: 마인크래프트)들이 플러그인을 지원하는 원리도 이와 같다. 메인 로직(<code>AgentLoop</code>)은 <code>ITool</code>이라는 인터페이스 가방(<code>ToolRegistry</code>)만 들고 있을 뿐, 그 안에 무엇이 들어있는지 신경 쓰지 않는다.</p>
+
+      <p>만약 누군가 "디스코드 알림 기능"을 추가하고 싶다면? 
+      기존 코드를 단 한 줄도 건드릴 필요 없이, <code>ITool</code>을 상속받는 <code>DiscordTool</code> 클래스를 만들어 <code>AppBootstrapper</code>에서 레지스트리에 찔러 넣어주기만 하면 끝난다.</p>
+
+      <h2>정리</h2>
+
+      <p>당장 눈앞의 기능을 구현하기엔 전역 매니저(Singleton)를 사용하는 것이 압도적으로 빠르다. 하지만 장기적인 유지보수와 진정한 의미의 로직 모딩(Logic Modding)을 고려한다면, 느려 보이더라도 DI 기반의 아키텍처를 뼈대로 잡는 것이 결국 가장 빠른 길이다.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th>기존 구조 (Singleton)</th>
+            <th>DI + EventBus 아키텍처 (Hearth)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>진입점</strong></td>
+            <td>각 MonoBehaviour의 <code>Awake/Start</code></td>
+            <td><code>AppBootstrapper</code>로 통제 (단일 진입)</td>
+          </tr>
+          <tr>
+            <td><strong>결합도</strong></td>
+            <td>매니저 클래스 간 강한 결합 (Tight)</td>
+            <td>인터페이스 기반 느슨한 결합 (Loose)</td>
+          </tr>
+          <tr>
+            <td><strong>테스트</strong></td>
+            <td>단독 테스트 사실상 불가</td>
+            <td>Mock 주입을 통한 완벽한 단독 테스트 가능</td>
+          </tr>
+          <tr>
+            <td><strong>기능 추가</strong></td>
+            <td>기존 클래스 코드를 직접 수정해야 함</td>
+            <td>외부 플러그인(모드) 형태로 주입만 하면 됨</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</body>
+</html>
