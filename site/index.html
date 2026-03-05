@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lostwaltz</title>
+  <style>
+    :root {
+      --bg:  #0c0c0f;
+      --s1:  #131316;
+      --s2:  #18181d;
+      --bd:  #222228;
+      --bd2: #2e2e38;
+      --tx:  #e2e2e8;
+      --mu:  #6e6e82;
+      --mu2: #9898b0;
+      --ac:  #8b7cf8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ─────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 44px 0 40px;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--tx);
+      text-decoration: none;
+      letter-spacing: .5px;
+      transition: color .15s;
+    }
+    .site-name:hover { color: var(--ac); }
+
+    nav a {
+      font-size: 11px;
+      color: var(--mu2);
+      text-decoration: none;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-left: 22px;
+      transition: color .15s;
+    }
+    nav a:hover { color: var(--ac); }
+
+    /* ── BIO ────────────────────────────── */
+    .bio {
+      padding: 4px 0 52px;
+      border-bottom: 1px solid var(--bd);
+      margin-bottom: 44px;
+    }
+
+    .bio-name {
+      font-size: 30px;
+      font-weight: 200;
+      letter-spacing: 3px;
+      color: var(--tx);
+      margin-bottom: 10px;
+    }
+
+    .bio-sub {
+      font-size: 13px;
+      color: var(--mu2);
+      letter-spacing: .5px;
+    }
+
+    /* ── POSTS ──────────────────────────── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--mu);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .post-list { display: flex; flex-direction: column; }
+
+    .post-item {
+      display: block;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--bd);
+      text-decoration: none;
+      color: inherit;
+    }
+    .post-item:first-child { border-top: 1px solid var(--bd); }
+    .post-item:hover .post-title { color: var(--ac); }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .post-date {
+      font-size: 11px;
+      color: var(--mu);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .5px;
+    }
+
+    .tag {
+      font-size: 10px;
+      color: var(--mu2);
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    .post-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--tx);
+      line-height: 1.45;
+      margin-bottom: 5px;
+      transition: color .15s;
+    }
+
+    .post-desc {
+      font-size: 13px;
+      color: var(--mu2);
+      line-height: 1.55;
+    }
+
+    /* ── FOOTER ─────────────────────────── */
+    footer {
+      padding: 48px 0 40px;
+      font-size: 11px;
+      color: var(--mu);
+      letter-spacing: 1px;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+
+    @media (max-width: 520px) {
+      body { padding: 0 18px; }
+      .bio-name { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="site-name">lostwaltz</a>
+  <nav>
+    <!-- <a href="/about/">about</a> -->
+  </nav>
+</header>
+
+<main>
+  <div class="bio">
+    <div class="bio-name">KIM MIN CHEOL</div>
+    <div class="bio-sub">인간은 망각의 동물이다.</div>
+  </div>
+
+  <div class="section-label">Posts</div>
+
+  <div class="post-list">
+    
+
+    <a href="/posts/dependency-injection-in-unity/" class="post-item">
+      <div class="post-meta">
+        <span class="post-date">2026.03.06</span>
+        <span class="tag">unity</span>
+        <span class="tag">architecture</span>
+        <span class="tag">devlog</span>
+        <span class="tag">di</span>
+      </div>
+      <div class="post-title">유니티(Unity) 의존성 주입(DI)으로 싱글톤의 한계 극복하기</div>
+      <div class="post-desc">오픈소스 프로젝트(Mate-Engine)의 스파게티 코드를 반면교사 삼아, 싱글톤 패턴의 한계를 극복하는 DI 아키텍처 도입기.</div>
+    </a>
+
+
+    <a href="/posts/tile-type-object/" class="post-item">
+      <div class="post-meta">
+        <span class="post-date">2026.03.01</span>
+        <span class="tag">unity</span>
+        <span class="tag">architecture</span>
+        <span class="tag">devlog</span>
+      </div>
+      <div class="post-title">Unity 타일 기믹 시스템 재설계 — Type Object 패턴</div>
+      <div class="post-desc">기믹마다 클래스를 만들던 방식에서 Condition + Action 조합 구조로 전환한 기록.</div>
+    </a>
+
+    <a href="/posts/new-blog/" class="post-item">
+      <div class="post-meta">
+        <span class="post-date">2025.07.08</span>
+        <span class="tag">기타</span>
+      </div>
+      <div class="post-title">NEW BLOG!</div>
+      <div class="post-desc">새 블로그를 시작하며.</div>
+    </a>
+
+  </div>
+</main>
+
+<footer>© 2025 lostwaltz</footer>
+
+</body>
+</html>

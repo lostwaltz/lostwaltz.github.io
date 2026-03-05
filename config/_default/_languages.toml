@@ -1,0 +1,6 @@
+# Rename this file to languages.toml to enable multilingual support
+[ko]
+languageName = "한국어"
+languagedirection = "ltr"
+title = "KIM, 인간은 망각의 동물이다"
+weight = 2
