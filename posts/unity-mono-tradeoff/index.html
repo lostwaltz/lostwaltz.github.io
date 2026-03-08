@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unity에서 완전한 설계란 없다 — Mono, SO, 순수 C# 트릴레마 — lostwaltz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <style>
+    :root {
+      --bg:  #0c0c0f;
+      --s1:  #131316;
+      --s2:  #18181d;
+      --bd:  #222228;
+      --bd2: #2e2e38;
+      --tx:  #e2e2e8;
+      --mu:  #6e6e82;
+      --mu2: #9898b0;
+      --ac:  #8b7cf8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    header { padding: 36px 0 32px; }
+
+    .back {
+      font-size: 12px;
+      color: var(--mu2);
+      text-decoration: none;
+      letter-spacing: .5px;
+      transition: color .15s;
+    }
+    .back:hover { color: var(--ac); }
+
+    .post-header {
+      padding: 32px 0 28px;
+      border-bottom: 1px solid var(--bd);
+      margin-bottom: 40px;
+    }
+
+    .post-title {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: .3px;
+      line-height: 1.35;
+      color: var(--tx);
+      margin-bottom: 16px;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .post-date { font-size: 12px; color: var(--mu); font-variant-numeric: tabular-nums; }
+    .post-read { font-size: 12px; color: var(--mu); }
+
+    .tag {
+      font-size: 10px;
+      color: var(--mu2);
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    .post-body {
+      line-height: 1.85;
+      font-size: 15px;
+      color: var(--tx);
+      padding-bottom: 64px;
+    }
+
+    .post-body h2 {
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--tx);
+      margin: 2.4em 0 .8em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .post-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--mu2);
+      margin: 1.8em 0 .6em;
+      letter-spacing: .3px;
+    }
+
+    .post-body p { margin-bottom: 1.3em; }
+
+    .post-body a {
+      color: var(--ac);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(139,124,248,.3);
+      transition: border-color .15s;
+    }
+    .post-body a:hover { border-color: var(--ac); }
+
+    .post-body ul, .post-body ol {
+      margin: 0 0 1.3em 1.4em;
+    }
+    .post-body li { margin-bottom: .45em; }
+
+    .post-body blockquote {
+      border-left: 3px solid var(--ac);
+      padding: 6px 0 6px 18px;
+      margin: 1.5em 0;
+      color: var(--mu2);
+    }
+
+    .post-body hr {
+      border: none;
+      border-top: 1px solid var(--bd);
+      margin: 2.4em 0;
+    }
+
+    .post-body code {
+      font-family: 'Consolas', 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--ac);
+    }
+
+    .post-body pre {
+      background: var(--s1) !important;
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 1.5em 0;
+    }
+    .post-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .post-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5em 0;
+      font-size: 13px;
+    }
+    .post-body th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--bd2);
+      color: var(--mu2);
+      font-weight: 600;
+      letter-spacing: .5px;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .post-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--bd);
+      color: var(--tx);
+      vertical-align: top;
+    }
+    .post-body tr:last-child td { border-bottom: none; }
+
+    .callout {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-left: 3px solid var(--ac);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 1.5em 0;
+      font-size: 14px;
+      color: var(--mu2);
+    }
+
+    .post-footer {
+      border-top: 1px solid var(--bd);
+      padding: 24px 0 48px;
+    }
+
+    .post-footer a {
+      font-size: 12px;
+      color: var(--mu2);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .post-footer a:hover { color: var(--ac); }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+
+    @media (max-width: 520px) {
+      body { padding: 0 18px; }
+      .post-title { font-size: 22px; }
+      .post-body pre { padding: 14px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back">← lostwaltz</a>
+</header>
+
+<main>
+  <div class="post-header">
+    <h1 class="post-title">Unity에서 완전한 설계란 없다<br>— Mono, SO, 순수 C# 트릴레마</h1>
+    <div class="post-meta">
+      <span class="post-date">2026.03.08</span>
+      <span class="post-read">· 7분</span>
+      <span class="tag">unity</span>
+      <span class="tag">architecture</span>
+      <span class="tag">devlog</span>
+    </div>
+  </div>
+
+  <div class="post-body">
+
+    <p>
+      협업자가 올린 커밋 하나를 보다가 오래된 물음이 다시 떠올랐다.
+      타일 시스템 리팩터링이었는데, 기존의 복잡한 ScriptableObject 조합 구조를 걷어내고
+      <code>MonoBehaviour</code> 직접 상속으로 교체한 코드였다.
+      코드는 분명히 읽기 쉬워졌다. 그런데 뭔가 찜찜했다.
+    </p>
+
+    <p>
+      타일에 <code>MonoBehaviour</code>를 붙인다는 건, 타일이 100개면 컴포넌트가 100개라는 뜻이다.
+      내가 원래 일부러 피했던 바로 그 구조였다.
+    </p>
+
+    <h2>세 가지 선택지와 각각의 대가</h2>
+
+    <p>
+      유니티에서 "객체가 동작을 갖게 하는" 방법은 크게 세 가지다.
+      그리고 어느 것도 공짜가 아니다.
+    </p>
+
+    <h3>MonoBehaviour 컴포넌트</h3>
+
+    <p>
+      씬과 자연스럽게 연동되고, 라이프사이클(<code>Awake</code>, <code>OnEnable</code>, <code>Update</code>)을 자동으로 얻는다.
+      인스펙터에서 바로 확인할 수 있고, 인스턴스마다 독립적인 상태를 갖기도 쉽다.
+    </p>
+
+    <p>
+      대신 컴포넌트 수가 선형으로 늘어난다. 타일 100개면 <code>MonoBehaviour</code> 100개.
+      <code>Update</code>를 안 쓰더라도 유니티 내부에서 관리 비용이 발생하고,
+      런타임에 <code>AddComponent / Destroy</code>로 컴포넌트를 교체하는 패턴은 버그의 온상이 된다.
+    </p>
+
+<pre><code class="language-csharp">// 돌 타일이 깎이면 색상 타일로 "변환"
+private void ConvertToColorTile()
+{
+    var colorTile = gameObject.AddComponent&lt;RcColorTile&gt;();
+    colorTile.Construct(new RcTileData { Color = targetColor });
+    Destroy(this); // 프레임 끝에 제거 — 그 사이 두 컴포넌트가 공존
+}
+</code></pre>
+
+    <p>
+      <code>Destroy</code>는 즉시 실행되지 않는다. 한 프레임 동안 두 컴포넌트가 동시에 존재하고,
+      외부에서 캐싱하고 있던 참조는 null이 된다. 잡기 어려운 버그가 여기서 생긴다.
+    </p>
+
+    <h3>ScriptableObject 동작</h3>
+
+    <p>
+      SO는 에셋으로 존재하기 때문에 공유가 쉽고 인스펙터 지원도 받을 수 있다.
+      런타임에 인스턴스를 새로 만들지 않아도 된다.
+    </p>
+
+    <p>
+      문제는 SO가 <strong>인스턴스 상태를 가질 수 없다</strong>는 것이다.
+      SO는 에셋이라 모든 타일이 같은 SO를 공유하기 때문에, 타일별로 달라지는 상태
+      (돌 타일의 남은 내구도, 색상 타일의 클리어 여부 등)는 별도 데이터 클래스에 들어가야 한다.
+      동작이 세분화될수록 SO 에셋 수가 폭발하고, 조합이 복잡해질수록 에디터가 지저분해진다.
+    </p>
+
+    <h3>순수 C# 클래스</h3>
+
+    <p>
+      Mono도 SO도 아닌, 그냥 C# 클래스 계층으로 동작을 정의하는 방법이다.
+      오버헤드가 없고 OOP를 온전히 활용할 수 있다.
+    </p>
+
+    <p>
+      대신 유니티와의 연결이 끊긴다. 인스펙터에서 보이지 않고, 씬 라이프사이클도 없다.
+      누가 이 인스턴스를 만들고, 들고 있고, 해제할지를 전부 직접 관리해야 한다.
+      관리 로직이 한 곳에 모이지 않으면 금방 흩어진다.
+    </p>
+
+    <h2>조합하면 해결될까</h2>
+
+    <p>
+      세 방식을 섞으면 어떨까. 팩토리는 SO로, 동작 인스턴스는 순수 C# 클래스로,
+      진입점만 Mono로 최소화하는 구조다.
+    </p>
+
+<pre><code class="language-csharp">// SO는 팩토리 역할만
+public abstract class RcTileTypeSO : ScriptableObject
+{
+    public abstract RcTileBehavior CreateBehavior();
+}
+
+// 동작은 순수 C# 계층
+public abstract class RcTileBehavior
+{
+    public abstract void OnDiceEnter(RcTileData data, RcDicePawn pawn, Vector2Int pos);
+}
+
+// 중앙 시스템이 인스턴스 관리
+public class RcTileSystem : RcSingletonMono&lt;RcTileSystem&gt;
+{
+    private Dictionary&lt;Vector2Int, RcTileBehavior&gt; _behaviors;
+
+    public void OnDiceEnter(Vector2Int pos, RcDicePawn pawn)
+    {
+        if (_behaviors.TryGetValue(pos, out var behavior))
+            behavior.OnDiceEnter(_tileMap[pos], pawn, pos);
+    }
+}
+</code></pre>
+
+    <p>
+      이렇게 하면 타일에 <code>MonoBehaviour</code>가 붙지 않고, SO 남발도 없고,
+      동작은 상속으로 확장 가능하다. 그나마 균형에 가까운 구조다.
+    </p>
+
+    <p>
+      하지만 이것도 공짜가 아니다. 타일별 커스텀 파라미터를 인스펙터에서 조정하기 어렵고,
+      인스턴스 관리 책임이 <code>RcTileSystem</code>에 집중되어 그 클래스가 복잡해진다.
+      팀 컨벤션이 없으면 누군가 다시 Mono를 붙이기 시작한다.
+    </p>
+
+    <h2>이게 유니티의 구조적 한계다</h2>
+
+    <p>
+      어떤 선택을 해도 사이드이펙트가 생기는 건 실력 부족이 아니다.
+      유니티가 <code>MonoBehaviour</code> 기반으로 설계된 엔진이기 때문에,
+      Mono를 피하려고 할수록 엔진과 싸우는 꼴이 된다.
+    </p>
+
+    <div class="callout">
+      유니티가 DOTS(ECS)를 만든 건 이 구조적 문제를 스스로 인정한 것이다.<br>
+      Mono 기반 설계의 한계를 엔진 레벨에서 해결하려 한 시도.
+      다만 러닝커브가 너무 높아 중소 프로젝트에선 현실적으로 쓰기 어렵다.
+    </div>
+
+    <p>
+      이번 협업 충돌도 그 연장선이었다. 협업자는 복잡한 SO 조합을 걷어내고 싶었고,
+      나는 타일마다 Mono가 붙는 걸 피하고 싶었다. 둘 다 맞는 판단이고, 둘 다 비용이 있었다.
+    </p>
+
+    <h2>그래서 설계란</h2>
+
+    <p>
+      "어떻게 하면 사이드이펙트가 없을까"가 아니라
+      <strong>"어떤 사이드이펙트를 감수할 것인가"</strong>를 결정하는 일이다.
+    </p>
+
+    <table>
+      <tr>
+        <th>방식</th>
+        <th>얻는 것</th>
+        <th>잃는 것</th>
+      </tr>
+      <tr>
+        <td>MonoBehaviour</td>
+        <td>인스턴스 관리 자동, 인스펙터 연동</td>
+        <td>컴포넌트 비용, 런타임 교체 위험</td>
+      </tr>
+      <tr>
+        <td>ScriptableObject</td>
+        <td>에셋 공유, 에디터 지원</td>
+        <td>인스턴스 상태 불가, SO 남발</td>
+      </tr>
+      <tr>
+        <td>순수 C#</td>
+        <td>오버헤드 없음, OOP 자유</td>
+        <td>인스펙터 단절, 라이프사이클 직접 관리</td>
+      </tr>
+    </table>
+
+    <p>
+      프로젝트 규모, 팀 구성, 기획 변경 빈도에 따라 어떤 비용을 선택할지가 달라진다.
+      그 판단 기준을 팀이 명시적으로 합의해두지 않으면, 코드리뷰마다 같은 논쟁이 반복된다.
+      이번 충돌이 정확히 그 케이스였다.
+    </p>
+
+    <p>
+      완전한 해결책을 찾는 것보다, 지금 선택의 트레이드오프를 팀이 함께 이해하고 있는 게 더 중요하다.
+    </p>
+
+    <hr>
+
+    <p>
+      그래도 "그나마 나은 절충안"은 있다.
+      다음 글에서 SO 팩토리 + 순수 C# 동작 계층 + <code>[SerializeReference]</code> 파라미터를 조합한
+      실제 구현 흐름을 정리했다.
+    </p>
+
+    <p>
+      → <a href="/posts/unity-mono-tradeoff-2/">2편: 그래서 어떻게 짰나 — 절충안 구현 흐름</a>
+    </p>
+
+  </div>
+
+  <div class="post-footer">
+    <a href="/">← 목록으로</a>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>그래서 어떻게 짰나 — 절충안 구현 흐름 — lostwaltz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <style>
+    :root {
+      --bg:  #0c0c0f;
+      --s1:  #131316;
+      --s2:  #18181d;
+      --bd:  #222228;
+      --bd2: #2e2e38;
+      --tx:  #e2e2e8;
+      --mu:  #6e6e82;
+      --mu2: #9898b0;
+      --ac:  #8b7cf8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 0 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    header { padding: 36px 0 32px; }
+
+    .back {
+      font-size: 12px;
+      color: var(--mu2);
+      text-decoration: none;
+      letter-spacing: .5px;
+      transition: color .15s;
+    }
+    .back:hover { color: var(--ac); }
+
+    .post-header {
+      padding: 32px 0 28px;
+      border-bottom: 1px solid var(--bd);
+      margin-bottom: 40px;
+    }
+
+    .post-title {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: .3px;
+      line-height: 1.35;
+      color: var(--tx);
+      margin-bottom: 16px;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .post-date { font-size: 12px; color: var(--mu); font-variant-numeric: tabular-nums; }
+    .post-read { font-size: 12px; color: var(--mu); }
+
+    .tag {
+      font-size: 10px;
+      color: var(--mu2);
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    .post-body {
+      line-height: 1.85;
+      font-size: 15px;
+      color: var(--tx);
+      padding-bottom: 64px;
+    }
+
+    .post-body h2 {
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--tx);
+      margin: 2.4em 0 .8em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--bd);
+    }
+
+    .post-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--mu2);
+      margin: 1.8em 0 .6em;
+      letter-spacing: .3px;
+    }
+
+    .post-body p { margin-bottom: 1.3em; }
+
+    .post-body a {
+      color: var(--ac);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(139,124,248,.3);
+      transition: border-color .15s;
+    }
+    .post-body a:hover { border-color: var(--ac); }
+
+    .post-body ul, .post-body ol {
+      margin: 0 0 1.3em 1.4em;
+    }
+    .post-body li { margin-bottom: .45em; }
+
+    .post-body blockquote {
+      border-left: 3px solid var(--ac);
+      padding: 6px 0 6px 18px;
+      margin: 1.5em 0;
+      color: var(--mu2);
+    }
+
+    .post-body hr {
+      border: none;
+      border-top: 1px solid var(--bd);
+      margin: 2.4em 0;
+    }
+
+    .post-body code {
+      font-family: 'Consolas', 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      background: var(--s2);
+      border: 1px solid var(--bd2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--ac);
+    }
+
+    .post-body pre {
+      background: var(--s1) !important;
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 1.5em 0;
+    }
+    .post-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .post-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5em 0;
+      font-size: 13px;
+    }
+    .post-body th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--bd2);
+      color: var(--mu2);
+      font-weight: 600;
+      letter-spacing: .5px;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .post-body td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--bd);
+      color: var(--tx);
+      vertical-align: top;
+    }
+    .post-body tr:last-child td { border-bottom: none; }
+
+    .callout {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-left: 3px solid var(--ac);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 1.5em 0;
+      font-size: 14px;
+      color: var(--mu2);
+    }
+
+    .flow {
+      background: var(--s1);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 1.5em 0;
+      font-family: 'Consolas', 'SF Mono', monospace;
+      font-size: 13px;
+      color: var(--mu2);
+      line-height: 1.9;
+    }
+
+    .flow .hl { color: var(--ac); }
+
+    .post-footer {
+      border-top: 1px solid var(--bd);
+      padding: 24px 0 48px;
+      display: flex;
+      gap: 24px;
+    }
+
+    .post-footer a {
+      font-size: 12px;
+      color: var(--mu2);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .post-footer a:hover { color: var(--ac); }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+
+    @media (max-width: 520px) {
+      body { padding: 0 18px; }
+      .post-title { font-size: 22px; }
+      .post-body pre { padding: 14px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back">← lostwaltz</a>
+</header>
+
+<main>
+  <div class="post-header">
+    <h1 class="post-title">그래서 어떻게 짰나<br>— 절충안 구현 흐름</h1>
+    <div class="post-meta">
+      <span class="post-date">2026.03.09</span>
+      <span class="post-read">· 6분</span>
+      <span class="tag">unity</span>
+      <span class="tag">architecture</span>
+      <span class="tag">devlog</span>
+    </div>
+  </div>
+
+  <div class="post-body">
+
+    <p>
+      <a href="/posts/unity-mono-tradeoff/">이전 글</a>에서 Mono, SO, 순수 C# 각각의 트레이드오프를 정리했다.
+      결론은 "완전한 해결책은 없다"였는데, 그렇다고 손 놓고 있을 수는 없다.
+      이 글은 그 세 가지를 조합해 사이드이펙트를 최소화한 절충안을 실제 코드로 정리한다.
+    </p>
+
+    <h2>구조 개요</h2>
+
+    <div class="flow">
+      <span class="hl">SO</span>        팩토리 역할 — 프리팹, CreateBehavior()<br>
+      <span class="hl">Params</span>    인스턴스별 수치 — [SerializeReference] 직렬화<br>
+      <span class="hl">Behavior</span>  순수 C# 동작 — 상태 보유, Mono 없음<br>
+      <span class="hl">TileSystem</span> 중앙 관리 — Dictionary로 등록/디스패치
+    </div>
+
+    <p>
+      각 레이어가 하나의 책임만 갖는다. SO는 타입을 정의하고, Params는 수치를 들고,
+      Behavior는 동작을 실행하고, TileSystem은 연결한다.
+    </p>
+
+    <h2>1. 데이터 — TileData + SerializeReference Params</h2>
+
+    <p>
+      타일 데이터는 두 가지로 나뉜다.
+      타입이 뭔지(<code>TileType</code>)와 이 타일 인스턴스의 수치가 뭔지(<code>Params</code>).
+    </p>
+
+<pre><code class="language-csharp">[Serializable]
+public class RcTileData
+{
+    public RcTileTypeSO TileType;
+    [SerializeReference] public RcTileParams Params;
+
+    public bool IsEmpty => TileType == null;
+}
+
+[Serializable] public abstract class RcTileParams { }
+
+[Serializable]
+public class RcColorTileParams : RcTileParams
+{
+    public RcColorType Color;
+}
+
+[Serializable]
+public class RcStoneTileParams : RcTileParams
+{
+    public RcColorType Color;  // 깎인 뒤 드러나는 색상
+    public int MaxHits = 1;
+}
+</code></pre>
+
+    <p>
+      <code>[SerializeReference]</code>를 쓰면 인스펙터에서 <code>Params</code> 타입을 드롭다운으로 선택할 수 있다.
+      <code>RcTileData</code>에 필드가 늘어나지 않고, 기믹마다 필요한 수치를 독립된 클래스에서 관리한다.
+    </p>
+
+    <div class="callout">
+      수평 상속을 유지하는 게 중요하다. <code>RcStoneTileParams</code>가 <code>RcColorTileParams</code>를 상속하면
+      Stone이 Color에 결합되어, Color가 바뀔 때 Stone도 영향을 받는다.
+      공통 필드가 중복되더라도 수평으로 유지하는 편이 낫다.
+    </div>
+
+    <h2>2. SO — 팩토리</h2>
+
+    <p>
+      <code>RcTileTypeSO</code>는 이 타입의 프리팹과 <code>CreateBehavior()</code>만 갖는다.
+      공유 설정(머티리얼, 기본 사운드 등)을 여기에 두면 된다.
+    </p>
+
+<pre><code class="language-csharp">public abstract class RcTileTypeSO : ScriptableObject
+{
+    public GameObject Prefab;
+    public abstract RcTileBehavior CreateBehavior();
+}
+
+public class RcColorTileTypeSO : RcTileTypeSO
+{
+    public override RcTileBehavior CreateBehavior() => new RcColorTileBehavior();
+}
+
+public class RcStoneTileTypeSO : RcTileTypeSO
+{
+    public override RcTileBehavior CreateBehavior() => new RcStoneTileBehavior();
+}
+</code></pre>
+
+    <p>
+      새 기믹을 추가할 때 <code>RcTileTypeSO</code> 서브클래스 하나와 SO 에셋 하나만 만들면 된다.
+      기존 코드는 건드리지 않는다.
+    </p>
+
+    <h2>3. Behavior — 순수 C# 동작</h2>
+
+    <p>
+      Mono가 아닌 순수 C# 클래스다. <code>GameObject</code>도 없고 <code>Update</code>도 없다.
+      동작에 필요한 상태(<code>_hits</code> 등)는 인스턴스 필드로 들고 있는다.
+    </p>
+
+<pre><code class="language-csharp">public abstract class RcTileBehavior
+{
+    public abstract void OnDiceEnter(RcTileData data, RcDicePawn pawn, Vector2Int pos);
+    public virtual void Reset() { }  // 레벨 리셋 시 상태 초기화
+}
+
+public class RcColorTileBehavior : RcTileBehavior
+{
+    private bool _cleared;
+
+    public override void OnDiceEnter(RcTileData data, RcDicePawn pawn, Vector2Int pos)
+    {
+        if (_cleared) return;
+        if (data.Params is not RcColorTileParams p) return;
+
+        if (pawn.GetBottomColor() == p.Color)
+        {
+            _cleared = true;
+            RcTileSystem.Instance.ClearTile(pos);
+        }
+    }
+
+    public override void Reset() => _cleared = false;
+}
+
+public class RcStoneTileBehavior : RcTileBehavior
+{
+    private int _hits;
+
+    public override void OnDiceEnter(RcTileData data, RcDicePawn pawn, Vector2Int pos)
+    {
+        if (data.Params is not RcStoneTileParams p) return;
+
+        _hits++;
+        if (_hits >= p.MaxHits)
+            RcTileSystem.Instance.ConvertToColor(pos, p.Color);
+    }
+
+    public override void Reset() => _hits = 0;
+}
+</code></pre>
+
+    <p>
+      <code>RcStoneTileBehavior</code>는 내부 상태(<code>_hits</code>)만 바꾸고
+      <code>RcTileSystem.ConvertToColor()</code>를 호출한다.
+      런타임에 컴포넌트를 교체하지 않는다.
+    </p>
+
+    <h2>4. TileSystem — 중앙 관리</h2>
+
+    <p>
+      레벨이 빌드될 때 모든 타일을 등록받고, 다이스 이동이 완료될 때 해당 위치의 Behavior를 디스패치한다.
+    </p>
+
+<pre><code class="language-csharp">public class RcTileSystem : RcSingletonMono&lt;RcTileSystem&gt;
+{
+    private Dictionary&lt;Vector2Int, RcTileBehavior&gt; _behaviors = new();
+    private Dictionary&lt;Vector2Int, RcTileData&gt;     _tileMap   = new();
+
+    public void Register(Vector2Int pos, RcTileData data, RcTileBehavior behavior)
+    {
+        _tileMap[pos]   = data;
+        _behaviors[pos] = behavior;
+    }
+
+    public void OnDiceEnter(Vector2Int pos, RcDicePawn pawn)
+    {
+        if (_behaviors.TryGetValue(pos, out var behavior))
+            behavior.OnDiceEnter(_tileMap[pos], pawn, pos);
+    }
+
+    public void ClearTile(Vector2Int pos) { /* 클리어 이벤트 발행 */ }
+
+    public void ConvertToColor(Vector2Int pos, RcColorType color)
+    {
+        // Behavior를 ColorTileBehavior로 교체 (런타임 컴포넌트 교체 아님)
+        var newData = new RcTileData
+        {
+            TileType = _tileMap[pos].TileType,
+            Params   = new RcColorTileParams { Color = color }
+        };
+        _tileMap[pos]   = newData;
+        _behaviors[pos] = new RcColorTileBehavior();
+        // 비주얼 갱신 이벤트 발행
+    }
+
+    public void ResetAll()
+    {
+        foreach (var b in _behaviors.Values) b.Reset();
+    }
+}
+</code></pre>
+
+    <h2>5. 빌드 흐름</h2>
+
+<pre><code class="language-csharp">public class RcLevelManager
+{
+    public void BuildLevel(RcLevelDataSO levelData)
+    {
+        foreach (var (tileData, gridPos) in levelData.Tiles)
+        {
+            if (tileData.IsEmpty) continue;
+
+            // 비주얼 — GameObject (Mono 없음)
+            Instantiate(tileData.TileType.Prefab, GridToWorld(gridPos), Quaternion.identity);
+
+            // 동작 — 순수 C# 인스턴스
+            var behavior = tileData.TileType.CreateBehavior();
+            RcTileSystem.Instance.Register(gridPos, tileData, behavior);
+        }
+    }
+}
+</code></pre>
+
+    <p>
+      타일 GameObject에는 아무 스크립트도 붙지 않는다.
+      비주얼과 로직이 완전히 분리되어 있어서, 비주얼만 교체하거나 로직만 수정하는 게 독립적으로 가능하다.
+    </p>
+
+    <h2>남아있는 비용</h2>
+
+    <p>이 구조도 공짜는 아니다.</p>
+
+    <ul>
+      <li><code>[SerializeReference]</code> 기본 인스펙터 UX가 불편 — 커스텀 PropertyDrawer가 필요하다</li>
+      <li><code>Params is not RcColorTileParams</code> 패턴 매칭이 각 Behavior마다 반복된다</li>
+      <li>레벨 리셋 시 <code>ResetAll()</code>을 명시적으로 호출해야 한다</li>
+      <li><code>ConvertToColor</code> 같은 타일 전환 로직이 <code>TileSystem</code>에 집중되어 그 클래스가 커질 수 있다</li>
+    </ul>
+
+    <p>
+      다만 이 비용들은 관리 가능한 범위다. 런타임 컴포넌트 교체나 Mono 100개보다
+      훨씬 예측 가능하고 통제하기 쉽다.
+    </p>
+
+    <hr>
+
+    <p>
+      유니티에서 "완전한 구조"는 없지만, 어떤 비용을 의식하고 선택했는지는 다르다.
+      이 구조의 핵심은 각 레이어가 하나의 책임만 갖도록 경계를 명확히 긋는 것이다.
+      그 경계가 흐릿해지는 순간 다시 처음으로 돌아간다.
+    </p>
+
+  </div>
+
+  <div class="post-footer">
+    <a href="/posts/unity-mono-tradeoff/">← 1편: 트릴레마</a>
+    <a href="/">목록으로</a>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+</body>
+</html>
